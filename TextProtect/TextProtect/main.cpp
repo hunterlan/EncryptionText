@@ -19,8 +19,11 @@ int main()
 	declassify.ReadFile("1.txt");
 	DecryptCesarModified(&declassify);
 	declassify.WriteFile("2.txt");
-	classify.text = "Lopem ipsum";
+	classify.text = "Lorem ipsum";
 	EncryptCesar(&classify);
 	classify.WriteFile("3.txt");
+	declassify.ReadFile("3.txt");
+	DecryptCesar(&declassify);
+	declassify.WriteFile("4.txt");
 	return 0;
 }
