@@ -5,7 +5,7 @@ const int CODE_LAST_SMALL_LETTER = 122;
 const int CODE_FIRST_BIG_LETTER = 65;
 const int CODE_LAST_BIG_LETTER = 90;
 
-const string ALPHABET_SMALL = "abcdefghijklmnopqrtstuvwxyz";
+const string ALPHABET_SMALL = "abcdefghijklmnopqrstuvwxyz";
 const string ALPHABET_BIG = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 void Classified::ReadFile(string path)
@@ -40,7 +40,7 @@ bool Classified::WriteFile(string path)
 	return isSuccesful;
 }
 
-void Declassified::ReadFile(string path)
+void Declassified::FullReadFile(string path)
 {
 	string temp;
 	text = "";
@@ -64,20 +64,34 @@ void Declassified::ReadFile(string path)
 			else
 			{
 				read >> temp;
-				if (read.eof())
-				{
-					text += temp;
-					break;
-				}
-				else
-				{
-					text += temp;
+				text += temp;
+				if (!read.eof())
 					text += ' ';
-				}
 			}
 		}
 		
 		read.close();
+	}
+}
+
+void Declassified::TextReadFile(string path)
+{
+	string temp;
+	text = "";
+	ifstream read(path);
+	if (!read.is_open())
+	{
+		text = "false";
+	}
+	else
+	{
+		while (!read.eof())
+		{
+			read >> temp;
+			text += temp;
+			if (!read.eof())
+				text += ' ';
+		}
 	}
 }
 
@@ -107,20 +121,8 @@ void EncryptCesarModified(struct Classified * classify)
 	int randomKey = 1 + rand() % +26;
 
 	for (int i = 0; i < classify->text.size(); i++)
-	{
 		classify->text[i] += randomKey;
-
-		/*if (classify->text[i] > CODE_LAST_SMALL_LETTER)
-			classify->text[i] -= CODE_LAST_SMALL_LETTER - CODE_FIRST_SMALL_LETTER;
-
-		else if (classify->text[i] > CODE_LAST_BIG_LETTER && classify->text[i] < CODE_FIRST_SMALL_LETTER)
-			classify->text[i] -= CODE_LAST_BIG_LETTER - CODE_FIRST_BIG_LETTER;*/
-
-			/*else if (classify->text[i] < 0)
-				classify->text[i] -= CODE_LAST_SMALL_LETTER - CODE_FIRST_SMALL_LETTER;*/
-
-	}
-
+	
 	classify->method = 1;
 	classify->key = randomKey;
 }
@@ -128,19 +130,8 @@ void EncryptCesarModified(struct Classified * classify)
 //Дешифровка Цезаря
 void DecryptCesarModified(struct Declassified * declassify)
 {
-	//bool isSmallLetter = true;
 	for (int i = 0; i < declassify->text.size(); i++)
-	{
-		/*if (!declassify->text[i] >= CODE_FIRST_SMALL_LETTER)
-			isSmallLetter = false;*/
-
 		declassify->text[i] -= declassify->key;
-
-		/*if (declassify->text[i] > CODE_LAST_BIG_LETTER && declassify->text[i] < CODE_FIRST_SMALL_LETTER)
-			declassify->text[i] += CODE_LAST_SMALL_LETTER - CODE_FIRST_SMALL_LETTER;
-		else if(declassify->text[i] < CODE_FIRST_BIG_LETTER)
-			declassify->text[i] += CODE_LAST_SMALL_LETTER - CODE_FIRST_SMALL_LETTER;*/
-	}
 }
 
 void EncryptCesar(struct Classified * classify)
@@ -148,8 +139,8 @@ void EncryptCesar(struct Classified * classify)
 	int randomKey = 1 + rand() % + 26, startPos = 0, finishPos;
 	for (int i = 0; i < classify->text.size(); i++)
 	{
-		finishPos = 0;
-		while(finishPos == 0)
+		finishPos = -1;
+		while(finishPos == -1)
 		{
 			if (classify->text[i] >= CODE_FIRST_BIG_LETTER && classify->text[i] <= CODE_LAST_BIG_LETTER)
 			{
@@ -192,8 +183,8 @@ void DecryptCesar(struct Declassified * declassify)
 	int startPos = 0, finishPos;
 	for (int i = 0; i < declassify->text.size(); i++)
 	{
-		finishPos = 0;
-		while (finishPos == 0)
+		finishPos = -1;
+		while (finishPos == -1)
 		{
 			if (declassify->text[i] >= CODE_FIRST_BIG_LETTER && declassify->text[i] <= CODE_LAST_BIG_LETTER)
 			{
@@ -201,7 +192,21 @@ void DecryptCesar(struct Declassified * declassify)
 				{
 					finishPos = startPos - declassify->key;
 					if (finishPos < 0)
-						finishPos = -finishPos;
+					{
+						int temp = startPos, tempKey = declassify->key;
+						while (temp >= 0)
+						{
+							temp--;
+							tempKey--;
+						}
+						temp = ALPHABET_BIG.size();
+						while(tempKey >= 0)
+						{
+							temp--;
+							tempKey--;
+					    }
+						finishPos = temp;
+					}
 					declassify->text[i] = ALPHABET_BIG[finishPos];
 					startPos = 0;
 				}
@@ -215,7 +220,21 @@ void DecryptCesar(struct Declassified * declassify)
 				{
 					finishPos = startPos - declassify->key;
 					if (finishPos < 0)
-						finishPos = -finishPos;
+					{
+						int temp = startPos, tempKey = declassify->key;
+						while (temp >= 0)
+						{
+							temp--;
+							tempKey--;
+						}
+						temp = ALPHABET_SMALL.size();
+						while (tempKey >= 0)
+						{
+							temp--;
+							tempKey--;
+						}
+						finishPos = temp;
+					}
 					declassify->text[i] = ALPHABET_SMALL[finishPos];
 					startPos = 0;
 				}
@@ -227,33 +246,3 @@ void DecryptCesar(struct Declassified * declassify)
 		}
 	}
 }
-
-
-//void EncryptGronsfeld(struct Classified * classify)
-//{
-//	string tempPassword;
-//	int password;
-//	cout << "Write 4 numeracals for password: ";
-//	cin >> password;
-//	int i = 0;
-//	while (classify->text.size() > tempPassword.size())
-//	{
-//		tempPassword.push_back(tempPassword[i]);
-//		if (i == 3)
-//			i = 0;
-//		else
-//			i++;
-//	}
-//	password = atoll(tempPassword.c_str());
-//	for (int i = 0; i < classify->text.size(); i++)
-//	{
-//		countDivide = 8;
-//		while (temp > 0)
-//		{
-//			if(countDi)
-//		}
-//		classify->text[i] += numKey;
-//	}
-//	classify->method = 3;
-//	classify->key = password;
-//}

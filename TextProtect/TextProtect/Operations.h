@@ -24,7 +24,8 @@ struct Declassified
 	string text;
 	int method;
 	int key;
-	void ReadFile(string path);
+	void FullReadFile(string path);
+	void TextReadFile(string path);
 	bool WriteFile(string path);
 };
 
