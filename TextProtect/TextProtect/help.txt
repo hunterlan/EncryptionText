@@ -1,0 +1,7 @@
+This is a programm to encrypt\decrypt text.
+There is 2 method:
+- Encrypt by Cesar. It means a old-encrypt method. You can easily decrypt it manual.
+- Encrypt by modified Cesar. It's a method, which include ASCII symb and you can't decrypt it manual, only by programm. 
+Also, about decryption by Cesar:
+Full read text - you need use it if you file is encrypted by my programm.
+Part read text - you need use it if you file is encrypter manual. 

@@ -10,6 +10,7 @@ const string ALPHABET_BIG = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 void Classified::ReadFile(string path)
 {
+	string temp;
 	ifstream read(path);
 	if (!read.is_open())
 	{
@@ -17,7 +18,14 @@ void Classified::ReadFile(string path)
 	}
 	else
 	{
-		read >> text;
+		while (!read.eof())
+		{
+			read >> temp;
+		text += temp;
+		if (!read.eof())
+			text += ' ';
+		}
+			
 		read.close();
 	}
 }
@@ -34,7 +42,8 @@ bool Classified::WriteFile(string path)
 	{
 		write << method << '\n';
 		write << key << '\n';
-		write << text;
+		for (int i = 0; text[i] != '\0'; i++)
+			write << text[i];
 		write.close();
 	}
 	return isSuccesful;
@@ -105,7 +114,8 @@ bool Declassified::WriteFile(string path)
 	}
 	else
 	{
-		write << text;
+		for (int i = 0; text[i] != '\0'; i++)
+			write << text[i];
 		write.close();
 	}
 	return isSuccesful;
